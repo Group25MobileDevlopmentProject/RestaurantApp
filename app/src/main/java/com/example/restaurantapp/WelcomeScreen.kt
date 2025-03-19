@@ -55,11 +55,11 @@ fun WelcomeScreen(modifier: Modifier = Modifier, onLoginClick: () -> Unit, onSig
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Company Logo",
                 modifier = Modifier
-                    .size(115.dp)
+                    .size(180.dp)
                     .padding(bottom = 32.dp)
             )
             Text(
-                text = "Bain taithneamh as.",
+                text = "Bain taithneamh as",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White

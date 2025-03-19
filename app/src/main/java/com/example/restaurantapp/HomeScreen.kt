@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,14 +33,14 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(BackgroundGreen)
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
         Text(
             text = "Welcome to Our Pub!",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
@@ -53,7 +52,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
         ) {
             items(featuredItems) { item ->
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = IrishGreen),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier
                         .padding(8.dp)
@@ -71,7 +70,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
                                 .size(100.dp)
                                 .padding(bottom = 8.dp)
                         )
-                        Text(text = item.first, color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(text = item.first, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -87,23 +86,23 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
             Button(
                 onClick = { navController.navigate("menu") },
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = IrishGreen)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text(text = "Order Food", color = Color.White)
+                Text(text = "Order Food", color = MaterialTheme.colorScheme.onPrimary)
             }
             Button(
                 onClick = { /* Navigate to View Menu */ },
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = LightGreen)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
             ) {
-                Text(text = "View Menu", color = Color.White)
+                Text(text = "View Menu", color = MaterialTheme.colorScheme.onSecondary)
             }
             Button(
                 onClick = { /* Navigate to Check Order Status */ },
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = AccentGreen)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
             ) {
-                Text(text = "Order Status", color = Color.White)
+                Text(text = "Order Status", color = MaterialTheme.colorScheme.onTertiary)
             }
         }
 
@@ -112,7 +111,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
             text = "Upcoming Events & Special Offers",
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         Column(
@@ -122,7 +121,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
         ) {
             events.forEach { event ->
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = LightGreen),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier
                         .padding(8.dp)
@@ -132,7 +131,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
                         modifier = Modifier.padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = event, color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(text = event, color = MaterialTheme.colorScheme.onSecondary, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -140,10 +139,10 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
         Button(
             onClick = { /* Navigate to Events & Special Offers page */ },
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = IrishGreen),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            Text(text = "See All Events & Offers", color = Color.White)
+            Text(text = "See All Events & Offers", color = MaterialTheme.colorScheme.onPrimary)
         }
     }
 }
