@@ -7,10 +7,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.restaurantapp.ui.theme.RestaurantAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,29 +20,41 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RestaurantAppTheme {
+                val navController = rememberNavController()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    NavHost(navController = navController, startDestination = "welcome") {
+                        composable("welcome") {
+                            WelcomeScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                onLoginClick = { navController.navigate("login") },
+                                onSignUpClick = { navController.navigate("signup") },
+                                onHomeClick = { navController.navigate("home") }
+                            )
+                        }
+                        composable("login") {
+                            LoginScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                navController = navController
+                            )
+                        }
+                        composable("signup") {
+                            SignUpScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                navController = navController
+                            )
+                        }
+                        composable("home") {
+                            HomeScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                navController = navController
+                            )
+                        }
+                        composable("menu") {
+                            MenuOrderingPage(navController = navController)
+                        }
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    RestaurantAppTheme {
-        Greeting("Android")
     }
 }
