@@ -1,6 +1,5 @@
 package com.example.restaurantapp
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -12,23 +11,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.restaurantapp.ui.theme.*
+import androidx.navigation.NavHostController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun LoginScreen(navController: NavController) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
 
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundGreen)
-            .padding(16.dp)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
+        // TopAppBar
         TopAppBar(
             title = { Text("Login", color = Color.White, fontSize = 24.sp) },
             navigationIcon = {
@@ -38,7 +41,8 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
             },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkGreen)
         )
-        Spacer(modifier = Modifier.height(32.dp))
+
+        // Email Field
         OutlinedTextField(
             value = email.value,
             onValueChange = { email.value = it },
@@ -53,6 +57,8 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
             )
         )
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Password Field
         OutlinedTextField(
             value = password.value,
             onValueChange = { password.value = it },
@@ -64,9 +70,12 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
                 focusedLabelColor = IrishGreen,
                 unfocusedLabelColor = TextGreen,
                 cursorColor = IrishGreen,
-            )
+            ),
+            visualTransformation = PasswordVisualTransformation()
         )
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Login Button
         Button(
             onClick = { /* Handle login */ },
             shape = RoundedCornerShape(12.dp),
@@ -76,24 +85,6 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
             colors = ButtonDefaults.buttonColors(containerColor = IrishGreen)
         ) {
             Text(text = "Login", fontSize = 20.sp, color = Color.White)
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Don't have an account?",
-            fontSize = 18.sp,
-            color = TextGreen,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            onClick = { navController.navigate("signup") },
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = LightGreen)
-        ) {
-            Text(text = "Sign Up", fontSize = 20.sp, color = Color.White)
         }
     }
 }
