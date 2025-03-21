@@ -81,8 +81,6 @@ fun MenuOrderingPage(navController: NavController) {
         }
     }
 
-    // Bottom Navigation Bar
-    BottomNavBar(navController)
 }
 
 @Composable
