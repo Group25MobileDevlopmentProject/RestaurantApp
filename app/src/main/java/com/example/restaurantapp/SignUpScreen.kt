@@ -12,26 +12,30 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.restaurantapp.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUpScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun SignUpScreen(navController: NavController) {
+    val name = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
-    val confirmPassword = remember { mutableStateOf("") }
 
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundGreen)
-            .padding(16.dp)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
+        // TopAppBar
         TopAppBar(
-            title = { Text("Sign-Up", color = Color.White, fontSize = 24.sp) },
+            title = { Text("Sign Up", color = Color.White, fontSize = 24.sp) },
             navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
@@ -39,7 +43,24 @@ fun SignUpScreen(modifier: Modifier = Modifier, navController: NavController) {
             },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkGreen)
         )
-        Spacer(modifier = Modifier.height(32.dp))
+
+        // Name Field
+        OutlinedTextField(
+            value = name.value,
+            onValueChange = { name.value = it },
+            label = { Text("Name", color = TextGreen, fontSize = 16.sp) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = IrishGreen,
+                unfocusedBorderColor = LightGreen,
+                focusedLabelColor = IrishGreen,
+                unfocusedLabelColor = TextGreen,
+                cursorColor = IrishGreen,
+            )
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Email Field
         OutlinedTextField(
             value = email.value,
             onValueChange = { email.value = it },
@@ -54,6 +75,8 @@ fun SignUpScreen(modifier: Modifier = Modifier, navController: NavController) {
             )
         )
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Password Field
         OutlinedTextField(
             value = password.value,
             onValueChange = { password.value = it },
@@ -65,50 +88,22 @@ fun SignUpScreen(modifier: Modifier = Modifier, navController: NavController) {
                 focusedLabelColor = IrishGreen,
                 unfocusedLabelColor = TextGreen,
                 cursorColor = IrishGreen,
-            )
+            ),
+            visualTransformation = PasswordVisualTransformation()
         )
         Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(
-            value = confirmPassword.value,
-            onValueChange = { confirmPassword.value = it },
-            label = { Text("Confirm Password", color = TextGreen, fontSize = 16.sp) },
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = IrishGreen,
-                unfocusedBorderColor = LightGreen,
-                focusedLabelColor = IrishGreen,
-                unfocusedLabelColor = TextGreen,
-                cursorColor = IrishGreen,
-            )
-        )
-        Spacer(modifier = Modifier.height(32.dp))
+
+        // Sign Up Button
         Button(
-            onClick = { /* Handle sign-up */ },
+            onClick = { /* Handle sign up */ },
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = IrishGreen)
         ) {
-            Text(text = "Create Account", fontSize = 20.sp, color = Color.White)
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Already have an account?",
-            fontSize = 18.sp,
-            color = TextGreen,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            onClick = { navController.navigate("login") },
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = LightGreen)
-        ) {
-            Text(text = "Login", fontSize = 20.sp, color = Color.White)
+            Text(text = "Sign Up", fontSize = 20.sp, color = Color.White)
         }
     }
 }
+
