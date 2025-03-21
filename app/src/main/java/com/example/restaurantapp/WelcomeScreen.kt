@@ -16,90 +16,106 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.restaurantapp.ui.theme.*
 
 @Composable
-fun WelcomeScreen(modifier: Modifier = Modifier, onLoginClick: () -> Unit, onSignUpClick: () -> Unit, onHomeClick: () -> Unit) {
+fun WelcomeScreen(
+    modifier: Modifier = Modifier,
+    onLoginClick: () -> Unit,
+    onSignUpClick: () -> Unit,
+    onHomeClick: () -> Unit
+) {
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(BackgroundGreen)
     ) {
+        // Background Image with Gradient Overlay
         Image(
             painter = painterResource(id = R.drawable.irish_pub),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(Color.Transparent, DarkGreen),
-                        startY = 100f,
-                        endY = Float.POSITIVE_INFINITY
+                        colors = listOf(Color.Transparent, DarkGreen.copy(alpha = 0.95f)),
+                        startY = 400f
                     )
                 )
         )
+
+        // Main Content
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
+                .padding(horizontal = 24.dp, vertical = 40.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = "Company Logo",
-                modifier = Modifier
-                    .size(180.dp)
-                    .padding(bottom = 32.dp)
-            )
-            Text(
-                text = "Bain taithneamh as",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-            Spacer(modifier = Modifier.height(32.dp))
-            Button(
-                onClick = onLoginClick,
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .shadow(4.dp, RoundedCornerShape(12.dp)),
-                colors = ButtonDefaults.buttonColors(containerColor = IrishGreen)
+            // Logo Section
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Login", fontSize = 20.sp, color = Color.White)
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = "Restaurant Logo",
+                    modifier = Modifier
+                        .size(150.dp)
+                        .padding(bottom = 16.dp)
+                )
+
+                Text(
+                    text = "Bain Taithneamh As",
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+
+                Text(
+                    text = "Enjoy a warm Irish welcome",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Light,
+                    color = Color.White.copy(alpha = 0.8f),
+                    textAlign = TextAlign.Center
+                )
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = onSignUpClick,
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .shadow(4.dp, RoundedCornerShape(12.dp)),
-                colors = ButtonDefaults.buttonColors(containerColor = LightGreen)
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Buttons Section
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Sign Up", fontSize = 20.sp, color = Color.White)
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = onHomeClick,
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .shadow(4.dp, RoundedCornerShape(12.dp)),
-                colors = ButtonDefaults.buttonColors(containerColor = LightGreen)
-            ) {
-                Text(text = "Home", fontSize = 20.sp, color = Color.White)
+                WelcomeButton(text = "Login", color = IrishGreen, onClick = onLoginClick)
+                WelcomeButton(text = "Sign Up", color = LightGreen, onClick = onSignUpClick)
+                WelcomeButton(text = "Enter as Guest", color = GoldenYellow, onClick = onHomeClick)
             }
         }
+    }
+}
+
+// Styled Button Component
+@Composable
+fun WelcomeButton(text: String, color: Color, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .shadow(10.dp, RoundedCornerShape(16.dp)),
+        colors = ButtonDefaults.buttonColors(containerColor = color)
+    ) {
+        Text(text = text, fontSize = 22.sp, color = Color.White, fontWeight = FontWeight.SemiBold)
     }
 }
