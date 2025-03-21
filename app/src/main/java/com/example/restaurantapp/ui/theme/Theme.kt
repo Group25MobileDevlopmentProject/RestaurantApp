@@ -4,20 +4,20 @@ import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = DarkGreen,
+    primary = IrishGreen,
     secondary = LightGreen,
     tertiary = AccentGreen,
-    background = BackgroundGreen,
+    background = SurfaceDark,
     surface = DarkGreen,
     error = ErrorRed,
     onPrimary = Color.White,
     onSecondary = Color.White,
     onBackground = Color.White,
-    onSurface = Color.White,
+    onSurface = TextWhite,
     onError = Color.White
 )
 
@@ -26,12 +26,12 @@ private val LightColorScheme = lightColorScheme(
     secondary = LightGreen,
     tertiary = AccentGreen,
     background = BackgroundGreen,
-    surface = Color.White,
+    surface = SurfaceWhite,
     error = ErrorRed,
     onPrimary = Color.White,
     onSecondary = Color.White,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
+    onBackground = TextBlack,
+    onSurface = TextBlack,
     onError = Color.White
 )
 
