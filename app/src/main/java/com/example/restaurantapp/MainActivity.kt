@@ -1,5 +1,6 @@
 package com.example.restaurantapp
 
+import CartPage
 import MenuItemInfoPage
 import MenuOrderingPage
 import android.os.Bundle
@@ -31,6 +32,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppContent() {
     var isDarkMode by remember { mutableStateOf(false) } // State for dark mode
+    val cartItems = remember { mutableStateListOf<MenuItem>() } // Shared cart state
 
     RestaurantAppTheme(darkTheme = isDarkMode) {
         val navController = rememberNavController()
@@ -51,9 +53,10 @@ fun AppContent() {
             ) {
                 // Core Screens in Bottom Navigation
                 composable("home") { HomeScreen(navController) }
-                composable("menu") { MenuOrderingPage(navController) }
+                composable("menu") { MenuOrderingPage(navController, cartItems) }
                 composable("events") { EventsScreen(navController) }
                 composable("profile") { ProfileScreen(navController) }
+                composable("cart") { CartPage(navController, cartItems) } // Added Cart Page
 
                 // Pass the dark mode state as a parameter to SettingsScreen
                 composable("settings") {
@@ -76,8 +79,8 @@ fun AppContent() {
                 composable("checkout") { CheckoutScreen(navController) }
                 composable("order_status") { OrderStatusScreen(navController) }
 
-                // New Menu Item Info Page Route
-                composable("menu_item_info/{menuItemId}") { backStackEntry ->
+                // Menu Item Info Page Route
+                composable("menuItemInfo/{menuItemId}") { backStackEntry ->
                     val menuItemId = backStackEntry.arguments?.getString("menuItemId")?.toIntOrNull()
                     val menuItem = getMenuItemById(menuItemId) // Fetch the menu item from your data source
                     menuItem?.let { MenuItemInfoPage(navController, it) }
@@ -101,6 +104,12 @@ fun BottomNavBar(navController: NavController) {
             label = { Text("Menu") },
             selected = false,
             onClick = { navController.navigate("menu") }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Filled.ShoppingCart, contentDescription = "Cart") },
+            label = { Text("Cart") },
+            selected = false,
+            onClick = { navController.navigate("cart") }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Event, contentDescription = "Events") },
