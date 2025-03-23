@@ -128,9 +128,11 @@ fun HomeScreen(navController: NavController) {
 // Function to fetch menu item by ID
 fun getMenuItemById(id: Int?): MenuItem? {
     val menuItems = listOf(
-        MenuItem(1, "Guinness Beef Stew", "A traditional Irish stew made with Guinness.", 12.99, R.drawable.guiness_beef_stew, false, false),
-        MenuItem(2, "Shepherd's Pie", "Classic Irish dish with minced meat and mashed potatoes.", 10.99, R.drawable.shepherds_pie, false, false),
-        MenuItem(3, "Irish Coffee", "A hot coffee cocktail with whiskey and cream.", 6.99, R.drawable.irish_coffee, true, true)
+        MenuItem(1, "Starters", "Bruschetta", 5.99, "Grilled bread with tomatoes", R.drawable.bruschetta, true, true),
+        MenuItem(2, "Mains", "Steak", 19.99, "Grilled steak with fries", R.drawable.steak, false, false),
+        MenuItem(3, "Drinks", "Lemonade", 2.99, "Freshly squeezed lemonade", R.drawable.lemonade, true, true),
+        MenuItem(4, "Desserts", "Cheesecake", 6.99, "Creamy cheesecake with berries", R.drawable.cheesecake, true, false),
+        MenuItem(5, "Specials", "Guinness Beef Stew", 14.99, "Beef stew with Guinness", R.drawable.guiness_beef_stew, false, false)
     )
     return menuItems.find { it.id == id }
 }
