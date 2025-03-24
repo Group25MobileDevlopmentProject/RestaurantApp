@@ -8,5 +8,6 @@ data class MenuItem(
     val description: String,
     val imageResId: Int,
     val isVegetarian: Boolean,
-    val isGlutenFree: Boolean
+    val isGlutenFree: Boolean,
+    val isVegan: Boolean
 )
