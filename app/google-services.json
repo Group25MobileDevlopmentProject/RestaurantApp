@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "491732576204",
+    "project_id": "thegrandspot-d3081",
+    "storage_bucket": "thegrandspot-d3081.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:491732576204:android:6651528f00fada46a41f69",
+        "android_client_info": {
+          "package_name": "com.example.restaurantapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCu8PbYM1TxNamOeZEdwOJGO138KDtzmVI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
