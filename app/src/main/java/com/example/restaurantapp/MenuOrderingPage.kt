@@ -25,11 +25,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun MenuOrderingPage(navController: NavController, cartItems: MutableList<MenuItem>) {
     val menuItems = listOf(
-        MenuItem(1, "Starters", "Bruschetta", 5.99, "Grilled bread with tomatoes", R.drawable.bruschetta, true, true),
-        MenuItem(2, "Mains", "Steak", 19.99, "Grilled steak with fries", R.drawable.steak, false, false),
-        MenuItem(3, "Drinks", "Lemonade", 2.99, "Freshly squeezed lemonade", R.drawable.lemonade, true, true),
-        MenuItem(4, "Desserts", "Cheesecake", 6.99, "Creamy cheesecake with berries", R.drawable.cheesecake, true, false),
-        MenuItem(5, "Specials", "Guinness Beef Stew", 14.99, "Beef stew with Guinness", R.drawable.guiness_beef_stew, false, false)
+        MenuItem(1, "Starters", "Bruschetta", 5.99, "Grilled bread with tomatoes", R.drawable.bruschetta, true, true, true),
+        MenuItem(2, "Mains", "Steak", 19.99, "Grilled steak with fries", R.drawable.steak, false, false, false),
+        MenuItem(3, "Drinks", "Lemonade", 2.99, "Freshly squeezed lemonade", R.drawable.lemonade, true, true, true),
+        MenuItem(4, "Desserts", "Cheesecake", 6.99, "Creamy cheesecake with berries", R.drawable.cheesecake, true, false, false),
+        MenuItem(5, "Specials", "Guinness Beef Stew", 14.99, "Beef stew with Guinness", R.drawable.guiness_beef_stew, false, false, false)
     )
     val searchQuery = remember { mutableStateOf("") }
 
