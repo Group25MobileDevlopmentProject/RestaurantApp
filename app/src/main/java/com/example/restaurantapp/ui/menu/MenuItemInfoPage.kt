@@ -7,12 +7,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.restaurantapp.MenuItem
+import coil.compose.rememberAsyncImagePainter
+import com.example.restaurantapp.ui.model.MenuItem
 import com.example.restaurantapp.ui.theme.DarkGreen
 import com.example.restaurantapp.ui.theme.IrishGreen
 import com.example.restaurantapp.ui.theme.TextGreen
@@ -20,7 +21,9 @@ import com.example.restaurantapp.ui.theme.TextGreen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuItemInfoPage(navController: NavController, menuItem: MenuItem) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
         TopAppBar(
             title = { Text(menuItem.name, color = Color.White, fontSize = 24.sp) },
             navigationIcon = {
@@ -31,11 +34,18 @@ fun MenuItemInfoPage(navController: NavController, menuItem: MenuItem) {
             colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkGreen)
         )
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Image Loading with Coil
+        val painter = rememberAsyncImagePainter(model = menuItem.imageUrl)
         Image(
-            painter = painterResource(id = menuItem.imageResId),
+            painter = painter,
             contentDescription = menuItem.name,
-            modifier = Modifier.size(200.dp).align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .size(200.dp)
+                .align(Alignment.CenterHorizontally),
+            contentScale = ContentScale.Crop // or ContentScale.Fit
         )
+
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             menuItem.name,

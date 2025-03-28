@@ -1,4 +1,4 @@
-package com.example.restaurantapp
+package com.example.restaurantapp.ui.auth
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,8 +19,7 @@ import com.example.restaurantapp.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUpScreen(navController: NavController) {
-    val name = remember { mutableStateOf("") }
+fun LoginScreen(navController: NavController) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
 
@@ -33,7 +32,7 @@ fun SignUpScreen(navController: NavController) {
     ) {
         // TopAppBar
         TopAppBar(
-            title = { Text("Sign Up", color = Color.White, fontSize = 24.sp) },
+            title = { Text("Login", color = Color.White, fontSize = 24.sp) },
             navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
@@ -41,22 +40,6 @@ fun SignUpScreen(navController: NavController) {
             },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkGreen)
         )
-
-        // Name Field
-        OutlinedTextField(
-            value = name.value,
-            onValueChange = { name.value = it },
-            label = { Text("Name", color = TextGreen, fontSize = 16.sp) },
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = IrishGreen,
-                unfocusedBorderColor = LightGreen,
-                focusedLabelColor = IrishGreen,
-                unfocusedLabelColor = TextGreen,
-                cursorColor = IrishGreen,
-            )
-        )
-        Spacer(modifier = Modifier.height(16.dp))
 
         // Email Field
         OutlinedTextField(
@@ -91,17 +74,16 @@ fun SignUpScreen(navController: NavController) {
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Sign Up Button
+        // Login Button
         Button(
-            onClick = { /* Handle sign up */ },
+            onClick = { /* Handle login */ },
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = IrishGreen)
         ) {
-            Text(text = "Sign Up", fontSize = 20.sp, color = Color.White)
+            Text(text = "Login", fontSize = 20.sp, color = Color.White)
         }
     }
 }
-

@@ -8,12 +8,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.restaurantapp.MenuItem
+import coil.compose.rememberAsyncImagePainter
+import com.example.restaurantapp.ui.model.MenuItem
 import com.example.restaurantapp.ui.theme.*
 
 @Composable
@@ -21,7 +22,9 @@ fun CartPage(navController: NavController, cartItems: MutableList<MenuItem>) {
     var total by remember { mutableDoubleStateOf(cartItems.sumOf { it.price }) }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
         Text(
             text = "Your Cart",
@@ -44,7 +47,9 @@ fun CartPage(navController: NavController, cartItems: MutableList<MenuItem>) {
 
         // Checkout Section - Fixed at Bottom
         Column(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -56,7 +61,7 @@ fun CartPage(navController: NavController, cartItems: MutableList<MenuItem>) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(
-                onClick = { /* Navigate to checkout */ },
+                onClick = { navController.navigate("checkout") },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = GoldenYellow)
             ) {
@@ -69,18 +74,27 @@ fun CartPage(navController: NavController, cartItems: MutableList<MenuItem>) {
 @Composable
 fun CartItemCard(item: MenuItem, cartItems: MutableList<MenuItem>, onUpdate: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Row(
-            modifier = Modifier.padding(12.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(12.dp)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Image Loading with Coil
+            val painter = rememberAsyncImagePainter(model = item.imageUrl)
             Image(
-                painter = painterResource(id = item.imageResId),
+                painter = painter,
                 contentDescription = item.name,
-                modifier = Modifier.size(72.dp).clip(MaterialTheme.shapes.small)
+                modifier = Modifier
+                    .size(72.dp)
+                    .clip(MaterialTheme.shapes.small),
+                contentScale = ContentScale.Crop // or ContentScale.Fit
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {

@@ -1,4 +1,4 @@
-package com.example.restaurantapp
+package com.example.restaurantapp.ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,6 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.restaurantapp.ui.model.MenuItem
+import com.example.restaurantapp.R
 
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -123,16 +125,4 @@ fun HomeScreen(navController: NavController) {
             }
         }
     }
-}
-
-// Function to fetch menu item by ID
-fun getMenuItemById(id: Int?): MenuItem? {
-    val menuItems = listOf(
-        MenuItem(1, "Starters", "Bruschetta", 5.99, "Grilled bread with tomatoes", R.drawable.bruschetta, true, true),
-        MenuItem(2, "Mains", "Steak", 19.99, "Grilled steak with fries", R.drawable.steak, false, false),
-        MenuItem(3, "Drinks", "Lemonade", 2.99, "Freshly squeezed lemonade", R.drawable.lemonade, true, true),
-        MenuItem(4, "Desserts", "Cheesecake", 6.99, "Creamy cheesecake with berries", R.drawable.cheesecake, true, false),
-        MenuItem(5, "Specials", "Guinness Beef Stew", 14.99, "Beef stew with Guinness", R.drawable.guiness_beef_stew, false, false)
-    )
-    return menuItems.find { it.id == id }
 }

@@ -1,4 +1,4 @@
-package com.example.restaurantapp
+package com.example.restaurantapp.ui.auth
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,11 +16,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.restaurantapp.ui.theme.*
-import androidx.navigation.NavHostController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavController) {
+fun SignUpScreen(navController: NavController) {
+    val name = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
 
@@ -33,7 +33,7 @@ fun LoginScreen(navController: NavController) {
     ) {
         // TopAppBar
         TopAppBar(
-            title = { Text("Login", color = Color.White, fontSize = 24.sp) },
+            title = { Text("Sign Up", color = Color.White, fontSize = 24.sp) },
             navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
@@ -41,6 +41,22 @@ fun LoginScreen(navController: NavController) {
             },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkGreen)
         )
+
+        // Name Field
+        OutlinedTextField(
+            value = name.value,
+            onValueChange = { name.value = it },
+            label = { Text("Name", color = TextGreen, fontSize = 16.sp) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = IrishGreen,
+                unfocusedBorderColor = LightGreen,
+                focusedLabelColor = IrishGreen,
+                unfocusedLabelColor = TextGreen,
+                cursorColor = IrishGreen,
+            )
+        )
+        Spacer(modifier = Modifier.height(16.dp))
 
         // Email Field
         OutlinedTextField(
@@ -75,16 +91,17 @@ fun LoginScreen(navController: NavController) {
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Login Button
+        // Sign Up Button
         Button(
-            onClick = { /* Handle login */ },
+            onClick = { /* Handle sign up */ },
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = IrishGreen)
         ) {
-            Text(text = "Login", fontSize = 20.sp, color = Color.White)
+            Text(text = "Sign Up", fontSize = 20.sp, color = Color.White)
         }
     }
 }
+

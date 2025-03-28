@@ -1,9 +1,9 @@
-package com.example.restaurantapp
+package com.example.restaurantapp.ui.cart
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 
 @Composable
-fun OrderStatusScreen(navController: NavController) {
+fun CheckoutScreen(navController: NavController) {
 
 }

@@ -1,4 +1,4 @@
-package com.example.restaurantapp
+package com.example.restaurantapp.ui.settings
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
