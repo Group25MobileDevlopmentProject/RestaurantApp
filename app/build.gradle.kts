@@ -52,7 +52,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core)
-    implementation (libs.androidx.material.icons.extended.v160)
+    implementation (libs.androidx.material.icons.extended)
     implementation (libs.androidx.activity.compose)
     implementation (libs.androidx.ui.tooling)
     testImplementation(libs.junit)
@@ -71,6 +71,8 @@ dependencies {
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation(libs.firebase.analytics)
     implementation (libs.firebase.firestore.ktx)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.ui.auth)
 
     implementation(libs.coil.compose)
 
