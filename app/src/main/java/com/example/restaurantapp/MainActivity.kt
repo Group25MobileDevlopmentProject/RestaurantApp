@@ -26,30 +26,45 @@ import com.example.restaurantapp.ui.model.MenuItem
 import com.example.restaurantapp.ui.settings.LanguageSelectionScreen
 import com.example.restaurantapp.ui.settings.ProfileScreen
 import com.example.restaurantapp.ui.settings.SettingsScreen
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.auth
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setTheme(R.style.Theme_RestaurantApp)
-
-        // Set up the Composable content
-        setContent {
-            AppContent()
-        }
+        setContent { AppContent() }
     }
 }
 
 @Composable
+fun rememberFirebaseAuthLauncher(): State<FirebaseUser?> {
+    val auth = remember { Firebase.auth }
+    val currentUser = remember { mutableStateOf(auth.currentUser) }
+
+    DisposableEffect(auth) {
+        val listener = FirebaseAuth.AuthStateListener { authState ->
+            currentUser.value = authState.currentUser
+        }
+        auth.addAuthStateListener(listener)
+        onDispose { auth.removeAuthStateListener(listener) }
+    }
+    return currentUser
+}
+
+@Composable
 fun AppContent() {
-    var isDarkMode by remember { mutableStateOf(false) } // State for dark mode
-    val cartItems = remember { mutableStateListOf<MenuItem>() } // Shared cart state
+    var isDarkMode by remember { mutableStateOf(false) }
+    val cartItems = remember { mutableStateListOf<MenuItem>() }
+    val authState = rememberFirebaseAuthLauncher()
+    val auth: FirebaseAuth = remember { Firebase.auth }
 
     RestaurantAppTheme(darkTheme = isDarkMode) {
         val navController = rememberNavController()
         val currentRoute = navController.currentBackStackEntryAsState()
 
-        // Scaffold with bottom bar visibility based on route
         Scaffold(
             bottomBar = {
                 if (currentRoute.value?.destination?.route != "welcome") {
@@ -59,37 +74,25 @@ fun AppContent() {
         ) { paddingValues ->
             NavHost(
                 navController = navController,
-                startDestination = "welcome",
+                startDestination = if (authState.value != null) "home" else "welcome",
                 modifier = Modifier.padding(paddingValues)
             ) {
-                // Core Screens in Bottom Navigation
                 composable("home") { HomeScreen(navController) }
                 composable("menu") { MenuOrderingPage(navController, cartItems) }
                 composable("events") { EventsScreen(navController) }
-                composable("profile") { ProfileScreen(navController) }
-                composable("cart") { CartPage(navController, cartItems) } // Added Cart Page
-
-                // Pass the dark mode state as a parameter to SettingsScreen
-                composable("settings") {
-                    SettingsScreen(navController, isDarkMode) { isDarkMode = it }
-                }
-
-                // New route for Language Selection
+                composable("profile") { ProfileScreen(navController, authState.value) }
+                composable("cart") { CartPage(navController, cartItems) }
+                composable("settings") { SettingsScreen(navController, isDarkMode) { isDarkMode = it } }
                 composable("language_selection") { LanguageSelectionScreen(navController) }
-
-                // Other Screens
-                composable("welcome") {
-                    WelcomeScreen(
-                        onLoginClick = { navController.navigate("login") },
-                        onSignUpClick = { navController.navigate("signUp") },
-                        onHomeClick = { navController.navigate("home") }
-                    )
-                }
+                composable("welcome") { WelcomeScreen(
+                    onLoginClick = { navController.navigate("login") },
+                    onSignUpClick = { navController.navigate("signUp") },
+                    onHomeClick = { navController.navigate("home") }
+                ) }
                 composable("login") { LoginScreen(navController) }
                 composable("signUp") { SignUpScreen(navController) }
                 composable("checkout") { CheckoutScreen(navController) }
                 composable("order_status") { OrderStatusScreen(navController) }
-
             }
         }
     }
@@ -169,4 +172,3 @@ fun BottomNavBar(navController: NavController) {
         )
     }
 }
-
