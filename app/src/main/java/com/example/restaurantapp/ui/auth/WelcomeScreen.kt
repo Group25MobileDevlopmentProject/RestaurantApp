@@ -25,8 +25,7 @@ import com.example.restaurantapp.ui.theme.*
 @Composable
 fun WelcomeScreen(
     modifier: Modifier = Modifier,
-    onLoginClick: () -> Unit,
-    onSignUpClick: () -> Unit,
+    onAuthClick: () -> Unit,
     onHomeClick: () -> Unit
 ) {
     Box(
@@ -37,7 +36,7 @@ fun WelcomeScreen(
         // Background Image with Gradient Overlay
         Image(
             painter = painterResource(id = R.drawable.irish_pub),
-            contentDescription = null,
+            contentDescription = "Background Image",
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
@@ -69,14 +68,14 @@ fun WelcomeScreen(
                     painter = painterResource(id = R.drawable.logo),
                     contentDescription = "Restaurant Logo",
                     modifier = Modifier
-                        .size(150.dp)
+                        .size(160.dp)
                         .padding(bottom = 16.dp)
                 )
 
                 Text(
                     text = "Bain Taithneamh As",
-                    fontSize = 36.sp,
-                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 38.sp,
+                    fontWeight = FontWeight.Bold,
                     color = Color.White,
                     textAlign = TextAlign.Center
                 )
@@ -84,8 +83,8 @@ fun WelcomeScreen(
                 Text(
                     text = "Enjoy a warm Irish welcome",
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.Light,
-                    color = Color.White.copy(alpha = 0.8f),
+                    fontWeight = FontWeight.Medium,
+                    color = Color.White.copy(alpha = 0.85f),
                     textAlign = TextAlign.Center
                 )
             }
@@ -97,8 +96,7 @@ fun WelcomeScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                WelcomeButton(text = "Login", color = IrishGreen, onClick = onLoginClick)
-                WelcomeButton(text = "Sign Up", color = LightGreen, onClick = onSignUpClick)
+                WelcomeButton(text = "Login / Sign Up", color = IrishGreen, onClick = onAuthClick)
                 WelcomeButton(text = "Enter as Guest", color = GoldenYellow, onClick = onHomeClick)
             }
         }
@@ -114,7 +112,7 @@ fun WelcomeButton(text: String, color: Color, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .shadow(10.dp, RoundedCornerShape(16.dp)),
+            .shadow(12.dp, RoundedCornerShape(16.dp)),
         colors = ButtonDefaults.buttonColors(containerColor = color)
     ) {
         Text(text = text, fontSize = 22.sp, color = Color.White, fontWeight = FontWeight.SemiBold)
