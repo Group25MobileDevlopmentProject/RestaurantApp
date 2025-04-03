@@ -15,8 +15,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.*
 import com.example.restaurantapp.ui.theme.RestaurantAppTheme
 import androidx.compose.material.icons.filled.*
-import com.example.restaurantapp.ui.auth.LoginScreen
-import com.example.restaurantapp.ui.auth.SignUpScreen
+import com.example.restaurantapp.ui.auth.AuthScreen
 import com.example.restaurantapp.ui.auth.WelcomeScreen
 import com.example.restaurantapp.ui.cart.CheckoutScreen
 import com.example.restaurantapp.ui.cart.OrderStatusScreen
@@ -67,7 +66,8 @@ fun AppContent() {
 
         Scaffold(
             bottomBar = {
-                if (currentRoute.value?.destination?.route != "welcome") {
+                val hideBottomNavRoutes = listOf("welcome", "auth")
+                if (currentRoute.value?.destination?.route !in hideBottomNavRoutes) {
                     BottomNavBar(navController)
                 }
             }
@@ -85,12 +85,10 @@ fun AppContent() {
                 composable("settings") { SettingsScreen(navController, isDarkMode) { isDarkMode = it } }
                 composable("language_selection") { LanguageSelectionScreen(navController) }
                 composable("welcome") { WelcomeScreen(
-                    onLoginClick = { navController.navigate("login") },
-                    onSignUpClick = { navController.navigate("signUp") },
+                    onAuthClick = { navController.navigate("auth") },
                     onHomeClick = { navController.navigate("home") }
                 ) }
-                composable("login") { LoginScreen(navController) }
-                composable("signUp") { SignUpScreen(navController) }
+                composable("auth") { AuthScreen(navController) }
                 composable("checkout") { CheckoutScreen(navController) }
                 composable("order_status") { OrderStatusScreen(navController) }
             }
@@ -107,11 +105,11 @@ fun BottomNavBar(navController: NavController) {
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
             label = { Text("Home") },
-            selected = currentRoute == "home", // Highlight if it's the current route
+            selected = currentRoute == "home",
             onClick = {
                 navController.navigate("home") {
-                    popUpTo(navController.graph.startDestinationId) // Clear backstack
-                    launchSingleTop = true // Avoid multiple instances
+                    popUpTo(navController.graph.startDestinationId)
+                    launchSingleTop = true
                 }
             }
         )
