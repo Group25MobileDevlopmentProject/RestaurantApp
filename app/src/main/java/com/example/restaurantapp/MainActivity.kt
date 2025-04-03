@@ -29,6 +29,8 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,6 +81,28 @@ fun AppContent() {
             ) {
                 composable("home") { HomeScreen(navController) }
                 composable("menu") { MenuOrderingPage(navController, cartItems) }
+                composable("menu_item_info/{itemId}") { backStackEntry ->
+                    val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
+                    val db = FirebaseFirestore.getInstance()
+
+                    var menuItem by remember { mutableStateOf<MenuItem?>(null) }
+
+                    LaunchedEffect(itemId) {
+                        val doc = db.collection("menuItems").document(itemId).get().await()
+                        menuItem = doc.toObject(MenuItem::class.java)?.copy(
+                            id = doc.id,
+                            isVegan = doc.getBoolean("isVegan") == true,
+                            isVegetarian = doc.getBoolean("isVegetarian") == true,
+                            isGlutenFree = doc.getBoolean("isGlutenFree") == true
+                        )
+
+                    }
+
+                    menuItem?.let {
+                        MenuItemInfoPage(navController, it)
+                    } ?: Text("Loading...")
+                }
+
                 composable("events") { EventsScreen(navController) }
                 composable("profile") { ProfileScreen(navController, authState.value) }
                 composable("cart") { CartPage(navController, cartItems) }

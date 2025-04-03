@@ -1,4 +1,5 @@
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -10,6 +11,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.restaurantapp.ui.model.MenuItem
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +22,8 @@ fun MenuItemCard(
     item: MenuItem,
     cartItems: MutableList<MenuItem>,
     snackbarHostState: SnackbarHostState,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    navController: NavController // Add NavController here
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var customization by remember { mutableStateOf("") }
@@ -28,7 +31,10 @@ fun MenuItemCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp),
+            .padding(vertical = 6.dp)
+            .clickable {
+                navController.navigate("menu_item_info/${item.id}")
+            },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
@@ -76,7 +82,9 @@ fun MenuItemCard(
 
             // Add to Cart Button
             Button(
-                onClick = { showDialog = true },
+                onClick = {
+                    showDialog = true
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFD700)) // GoldenYellow
             ) {
                 Text("Add", color = Color.Black, fontSize = 14.sp)

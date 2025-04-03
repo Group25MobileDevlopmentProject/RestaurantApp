@@ -74,5 +74,11 @@ fun MenuItemInfoPage(navController: NavController, menuItem: MenuItem) {
             fontSize = 16.sp,
             color = TextGreen
         )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            "Vegan: ${if (menuItem.isVegan) "Yes" else "No"}",
+            fontSize = 16.sp,
+            color = TextGreen
+        )
     }
 }

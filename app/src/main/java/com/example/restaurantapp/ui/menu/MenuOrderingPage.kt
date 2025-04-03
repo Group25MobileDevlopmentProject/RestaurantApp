@@ -25,27 +25,31 @@ fun MenuOrderingPage(navController: NavController, cartItems: MutableList<MenuIt
 
     var menuItems = remember { mutableStateListOf<MenuItem>() }
 
-
     val searchQuery = remember { mutableStateOf("") }
 
     // Snackbar for feedback when adding items
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
+    // Fetch the menu items from Firestore when the composable is first launched
     LaunchedEffect(key1 = true) {
         try {
             val snapshot = db.collection("menuItems").get().await()
             val items = snapshot.documents.mapNotNull { document ->
-                document.toObject(MenuItem::class.java)
+                document.toObject(MenuItem::class.java)?.copy(
+                    id = document.id,
+                    isVegan = document.getBoolean("isVegan") == true,
+                    isVegetarian = document.getBoolean("isVegetarian") == true,
+                    isGlutenFree = document.getBoolean("isGlutenFree") == true
+                )
             }
             menuItems.clear()
             menuItems.addAll(items)
-
         } catch (e: Exception) {
             println("Error getting menu items: $e")
-            // Optionally show a snackbar or other UI to indicate the error
         }
     }
+
 
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
@@ -63,14 +67,22 @@ fun MenuOrderingPage(navController: NavController, cartItems: MutableList<MenuIt
                 color = IrishGreen
             )
             IconButton(onClick = { navController.navigate("cart") }) {
-                Icon(
-                    Icons.Filled.ShoppingCart,
-                    contentDescription = "Cart",
-                    tint = IrishGreen,
-                    modifier = Modifier.size(28.dp)
-                )
-                if (cartItems.isNotEmpty()) {
-                    Text("${cartItems.size}", color = Color.Red, fontSize = 12.sp)
+                Box(contentAlignment = Alignment.TopEnd) {
+                    Icon(
+                        Icons.Filled.ShoppingCart,
+                        contentDescription = "Cart",
+                        tint = IrishGreen,
+                        modifier = Modifier.size(28.dp)
+                    )
+                    if (cartItems.isNotEmpty()) {
+                        Badge(
+                            containerColor = Color.Red,
+                            contentColor = Color.White,
+                            modifier = Modifier.padding(start = 16.dp, top = 0.dp)
+                        ) {
+                            Text("${cartItems.size}")
+                        }
+                    }
                 }
             }
         }
@@ -92,11 +104,14 @@ fun MenuOrderingPage(navController: NavController, cartItems: MutableList<MenuIt
         Spacer(modifier = Modifier.height(12.dp))
 
         // Filtered Menu Items
-        val filteredMenuItems = menuItems.filter { it.name.contains(searchQuery.value, ignoreCase = true) }
+        val filteredMenuItems = menuItems.filter {
+            it.name.contains(searchQuery.value, ignoreCase = true) ||
+                    it.description.contains(searchQuery.value, ignoreCase = true)
+        }
 
         LazyColumn {
             filteredMenuItems.groupBy { it.category }.forEach { (category, items) ->
-                item {
+            item {
                     Text(
                         text = category.uppercase(),
                         fontSize = 20.sp,
@@ -106,7 +121,13 @@ fun MenuOrderingPage(navController: NavController, cartItems: MutableList<MenuIt
                     )
                 }
                 items(items) { item ->
-                    MenuItemCard(item, cartItems, snackbarHostState, coroutineScope)
+                    MenuItemCard(
+                        item = item,
+                        cartItems = cartItems,
+                        snackbarHostState = snackbarHostState,
+                        coroutineScope = coroutineScope,
+                        navController = navController // Pass NavController here
+                    )
                 }
             }
         }
