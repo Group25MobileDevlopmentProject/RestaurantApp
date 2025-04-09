@@ -92,7 +92,10 @@ fun MenuOrderingPage(navController: NavController, cartItems: MutableList<MenuIt
             value = searchQuery.value,
             onValueChange = { searchQuery.value = it },
             label = { Text("Search", color = TextGreen, fontSize = 16.sp) },
-            modifier = Modifier.fillMaxWidth().clip(MaterialTheme.shapes.medium),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp), // Optional: spacing above/below
+            shape = MaterialTheme.shapes.medium, // Correctly applies rounded shape
             singleLine = true,
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = IrishGreen,
