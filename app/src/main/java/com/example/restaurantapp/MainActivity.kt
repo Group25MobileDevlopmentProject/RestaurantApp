@@ -103,7 +103,9 @@ fun AppContent() {
                     } ?: Text("Loading...")
                 }
 
-                composable("events") { EventsScreen(navController) }
+                composable("events") {
+                    EventsScreen(navController = navController, contentPadding = paddingValues)
+                }
                 composable("profile") { ProfileScreen(navController, authState.value) }
                 composable("cart") { CartPage(navController, cartItems) }
                 composable("settings") { SettingsScreen(navController, isDarkMode) { isDarkMode = it } }
