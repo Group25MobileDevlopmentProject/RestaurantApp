@@ -9,5 +9,7 @@ data class MenuItem(
     val imageUrl: String = "",
     val isVegetarian: Boolean = false,
     val isGlutenFree: Boolean = false,
-    val isVegan: Boolean = false
+    val isVegan: Boolean = false,
+    val tags: List<String> = emptyList(),
+    val isFeatured: Boolean = false
 )
