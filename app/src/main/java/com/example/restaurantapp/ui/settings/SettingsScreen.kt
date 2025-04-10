@@ -1,14 +1,20 @@
 package com.example.restaurantapp.ui.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.restaurantapp.ui.theme.IrishGreen
 
 @Composable
 fun SettingsScreen(
@@ -16,94 +22,90 @@ fun SettingsScreen(
     isDarkMode: Boolean,
     onDarkModeChanged: (Boolean) -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+    ) {
+        // Header
         Text(
             text = "Settings",
-            fontSize = 28.sp,
+            fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
+            color = IrishGreen,
+            modifier = Modifier.padding(vertical = 12.dp)
         )
 
-        // Appearance Section
+        // Appearance
         SettingsSection(title = "Appearance") {
-            SettingsOption(
+            SettingsSwitchOption(
                 title = "Dark Mode",
-                toggleState = isDarkMode,
-                onToggleChanged = onDarkModeChanged,
-                buttonLabel = "Toggle Dark Mode" // Custom label for dark mode toggle
+                isChecked = isDarkMode,
+                onToggle = onDarkModeChanged
             )
         }
 
-        // Notifications Section
+        // Notifications
         SettingsSection(title = "Notifications") {
-            SettingsOption(
+            SettingsSwitchOption(
                 title = "Enable Notifications",
-                toggleState = true,
-                onToggleChanged = {},
-                buttonLabel = "Enable Notifications" // Custom label for notifications toggle
+                isChecked = true,
+                onToggle = { /* TODO */ }
             )
         }
 
-        // Language Section
+        // Language
         SettingsSection(title = "Language") {
-            SettingsOption(
+            SettingsRowOption(
                 title = "Change Language",
-                onClick = { navController.navigate("language_selection") },
-                buttonLabel = "Select Language" // Custom label for language selection
+                onClick = { navController.navigate("language_selection") }
             )
         }
 
-        // Help Section
+        // Help
         SettingsSection(title = "Help & Support") {
-            SettingsOption(
-                title = "FAQ",
-                onClick = { /* Navigate to FAQ */ },
-                buttonLabel = "Read FAQ" // Custom label for FAQ
-            )
-            SettingsOption(
-                title = "Contact Support",
-                onClick = { /* Navigate to support page */ },
-                buttonLabel = "Get Support" // Custom label for contact support
-            )
+            SettingsRowOption(title = "FAQ") { /* TODO */ }
+            SettingsRowOption(title = "Contact Support") { /* TODO */ }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        // Save Button (optional)
+        // Save button (optional)
         Button(
-            onClick = { /* Handle save settings */ },
-            modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.medium
+            onClick = { /* TODO */ },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            shape = MaterialTheme.shapes.medium,
+            colors = ButtonDefaults.buttonColors(containerColor = IrishGreen)
         ) {
-            Text("Save Settings")
+            Text("Save Settings", fontSize = 16.sp, color = MaterialTheme.colorScheme.onPrimary)
         }
     }
 }
 
 @Composable
-fun SettingsSection(
-    title: String,
-    content: @Composable () -> Unit
-) {
-    // Section Title
+fun SettingsSection(title: String, content: @Composable () -> Unit) {
     Text(
         text = title,
-        fontSize = 20.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(vertical = 8.dp)
+        fontSize = 18.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = IrishGreen,
+        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
     )
-
-    // Section Content
     content()
+    HorizontalDivider(
+        modifier = Modifier.padding(vertical = 8.dp),
+        thickness = 1.dp,
+        color = Color.LightGray
+    )
 }
 
 @Composable
-fun SettingsOption(
+fun SettingsSwitchOption(
     title: String,
-    toggleState: Boolean = false,
-    onToggleChanged: (Boolean) -> Unit = {},
-    onClick: () -> Unit = {},
-    buttonLabel: String = "Change" // Default label for buttons
+    isChecked: Boolean,
+    onToggle: (Boolean) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -112,18 +114,41 @@ fun SettingsOption(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(title, fontSize = 18.sp)
-
-        // For toggle buttons like Dark Mode
-        if (title == "Dark Mode") {
-            Switch(
-                checked = toggleState,
-                onCheckedChange = onToggleChanged
+        Text(title, fontSize = 16.sp)
+        Switch(
+            checked = isChecked,
+            onCheckedChange = onToggle,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = IrishGreen,
+                checkedTrackColor = IrishGreen.copy(alpha = 0.5f),
+                uncheckedThumbColor = Color.Gray,
+                uncheckedTrackColor = Color.LightGray
             )
-        } else {
-            Button(onClick = onClick) {
-                Text(text = buttonLabel) // Use the button label here
-            }
-        }
+        )
+    }
+}
+
+@Composable
+fun SettingsRowOption(
+    title: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            fontSize = 16.sp,
+            modifier = Modifier.weight(1f)
+        )
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+            contentDescription = null,
+            tint = IrishGreen
+        )
     }
 }

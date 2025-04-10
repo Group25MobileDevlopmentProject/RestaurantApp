@@ -1,6 +1,5 @@
 package com.example.restaurantapp.ui.settings
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -8,14 +7,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -24,10 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.restaurantapp.R
+import com.example.restaurantapp.ui.theme.IrishGreen
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.draw.alpha
 
 @Composable
 fun ProfileScreen(navController: NavController, user: FirebaseUser?) {
@@ -35,25 +32,71 @@ fun ProfileScreen(navController: NavController, user: FirebaseUser?) {
     val userName = user?.displayName ?: "User"
     val userEmail = user?.email ?: ""
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text("Profile", fontSize = 28.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 16.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+    ) {
+        // Header
+        Text(
+            text = "Profile",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = IrishGreen,
+            modifier = Modifier
+                .padding(vertical = 12.dp)
+                .align(Alignment.Start)
+        )
 
-        // Profile Picture
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            Image(painter = painterResource(id = R.drawable.default_profile_pic), contentDescription = "Profile Picture",
-                modifier = Modifier.size(120.dp).clip(CircleShape))
+        // Profile Picture Centered
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.default_profile_pic),
+                contentDescription = "Profile Picture",
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(CircleShape)
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Name: $userName", fontSize = 20.sp)
-        Text(text = "Email: $userEmail", fontSize = 16.sp)
-        Spacer(modifier = Modifier.height(24.dp))
-        HorizontalDivider()
+        // User Info
+        Text(
+            text = "Name",
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            text = userName,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+
+        Text(
+            text = "Email",
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            text = userEmail,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
 
         // Settings Options
-        SettingsOption("Change Email", Icons.Default.Email) {}
-        SettingsOption("Change Password", Icons.Default.Lock) {}
-        SettingsOption("Log Out", Icons.AutoMirrored.Filled.ExitToApp) {
+        ProfileSettingItem(title = "Change Email", icon = Icons.Default.Email) {
+            // Handle Change Email
+        }
+        ProfileSettingItem(title = "Change Password", icon = Icons.Default.Lock) {
+            // Handle Change Password
+        }
+        ProfileSettingItem(title = "Log Out", icon = Icons.AutoMirrored.Filled.ExitToApp) {
             FirebaseAuth.getInstance().signOut()
             Toast.makeText(context, "Logged out successfully", Toast.LENGTH_SHORT).show()
             navController.navigate("welcome") {
@@ -65,11 +108,26 @@ fun ProfileScreen(navController: NavController, user: FirebaseUser?) {
 }
 
 @Composable
-fun SettingsOption(title: String, icon: ImageVector, onClick: () -> Unit) {
+fun ProfileSettingItem(title: String, icon: ImageVector, onClick: () -> Unit) {
     ListItem(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() }.padding(vertical = 8.dp),
-        leadingContent = { Icon(imageVector = icon, contentDescription = title) },
-        headlineContent = { Text(text = title, fontSize = 18.sp) }
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 4.dp),
+        leadingContent = {
+            Icon(
+                imageVector = icon,
+                contentDescription = title,
+                tint = IrishGreen
+            )
+        },
+        headlineContent = {
+            Text(
+                text = title,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     )
-    HorizontalDivider()
+    Divider(thickness = 1.dp, color = MaterialTheme.colorScheme.surfaceVariant)
 }
