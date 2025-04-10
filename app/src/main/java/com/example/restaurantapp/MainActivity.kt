@@ -115,7 +115,10 @@ fun AppContent() {
                     onHomeClick = { navController.navigate("home") }
                 ) }
                 composable("auth") { AuthScreen(navController) }
-                composable("checkout") { CheckoutScreen(navController) }
+                composable("checkout") { CheckoutScreen(
+                    navController,
+                    cartItems
+                ) }
                 composable("order_status") { OrderStatusScreen(navController) }
             }
         }
