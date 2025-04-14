@@ -1,128 +1,189 @@
 package com.example.restaurantapp.ui.home
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Event
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.restaurantapp.ui.model.MenuItem
+import coil.compose.AsyncImage
 import com.example.restaurantapp.R
+import com.example.restaurantapp.ui.theme.IrishGreen
+import com.example.restaurantapp.util.formatTimestamp
 
 @Composable
-fun HomeScreen(navController: NavController) {
-    val featuredItems = remember {
-        listOf(
-            Triple("Guinness Beef Stew", R.drawable.guiness_beef_stew, "Slow-cooked beef in Guinness sauce."),
-            Triple("Irish Coffee", R.drawable.irish_coffee, "Strong coffee with Irish whiskey and cream."),
-            Triple("Shepherd's Pie", R.drawable.shepherds_pie, "Classic minced lamb with mashed potatoes.")
-        )
-    }
-    val events = remember { listOf("Live Music Friday - 8 PM", "Happy Hour Saturday - 6-9 PM", "St. Patrick's Day Special - March 17") }
+fun HomeScreen(navController: NavController, viewModel: HomeViewModel = viewModel()) {
+    val featuredItems = viewModel.featuredItems
+    val events = viewModel.events
+
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF1E3A8A), Color(0xFF1E293B))
-                )
-            )
+            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
     ) {
-        // Hero Section
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp)
-                .clip(RoundedCornerShape(16.dp))
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.irish_pub),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Header
         Text(
-            text = "Welcome to Our Pub!",
-            fontSize = 28.sp,
+            text = "Home",
+            fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = IrishGreen,
+            modifier = Modifier.padding(bottom = 12.dp)
         )
 
-        // Featured Items
-        Text("Featured Dishes", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.padding(vertical = 8.dp))
-        LazyRow(modifier = Modifier.padding(vertical = 8.dp)) {
+        // Hero Banner
+        Image(
+            painter = painterResource(id = R.drawable.irish_pub),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .clip(MaterialTheme.shapes.medium)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Featured Dishes
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Featured Dishes", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = IrishGreen)
+            TextButton(onClick = { navController.navigate("menu") }) {
+                Text("See All", color = IrishGreen)
+            }
+        }
+
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             items(featuredItems) { item ->
                 Card(
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier.padding(8.dp).width(250.dp),
-                    elevation = CardDefaults.elevatedCardElevation(6.dp)
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier
+                        .width(240.dp)
+                        .height(280.dp),  // fixed height for uniform cards
+                    elevation = CardDefaults.cardElevation(4.dp)
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(16.dp)) {
-                        Image(
-                            painter = painterResource(id = item.second),
-                            contentDescription = item.first,
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        AsyncImage(
+                            model = item.imageUrl,
+                            contentDescription = item.name,
                             contentScale = ContentScale.Crop,
-                            modifier = Modifier.size(150.dp).clip(RoundedCornerShape(12.dp))
+                            modifier = Modifier
+                                .height(120.dp)
+                                .fillMaxWidth()
+                                .clip(MaterialTheme.shapes.small)
                         )
-                        Text(text = item.first, fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 4.dp))
-                        Text(text = item.third, fontSize = 14.sp, color = Color.Gray, modifier = Modifier.padding(top = 4.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = item.name,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            maxLines = 1
+                        )
+                        Text(
+                            text = item.description,
+                            fontSize = 14.sp,
+                            color = Color.Gray,
+                            maxLines = 3, // stops overly long text breaking the layout
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        )
                     }
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         // Upcoming Events
-        Text("Upcoming Events", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.padding(vertical = 8.dp))
-        Column {
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Upcoming Events", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = IrishGreen)
+            TextButton(onClick = { navController.navigate("events") }) {
+                Text("See All", color = IrishGreen)
+            }
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             events.forEach { event ->
                 Card(
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                    elevation = CardDefaults.elevatedCardElevation(6.dp)
+                    shape = MaterialTheme.shapes.medium,
+                    elevation = CardDefaults.cardElevation(4.dp),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(imageVector = Icons.Filled.Event, contentDescription = null, modifier = Modifier.size(24.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = event, fontSize = 16.sp)
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = event.title,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = IrishGreen
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = event.description,
+                            fontSize = 14.sp,
+                            color = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "📅 ${formatTimestamp(event.date)}",
+                            fontSize = 13.sp,
+                            color = Color.DarkGray
+                        )
                     }
                 }
             }
         }
 
+        Spacer(modifier = Modifier.height(24.dp))
+
         // Special Offers
-        Text("Special Offers", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.padding(vertical = 8.dp))
-        Column {
-            Card(
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                elevation = CardDefaults.elevatedCardElevation(6.dp)
-            ) {
-                Text(text = "50% Off on all Irish drinks this weekend!", fontSize = 16.sp, modifier = Modifier.padding(16.dp))
-            }
+        Text(
+            text = "Special Offers",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = IrishGreen,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        Card(
+            shape = MaterialTheme.shapes.medium,
+            elevation = CardDefaults.cardElevation(4.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "🍀 50% Off on all Irish drinks this weekend!",
+                fontSize = 16.sp,
+                modifier = Modifier.padding(16.dp)
+            )
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
