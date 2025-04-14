@@ -7,7 +7,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -50,6 +49,10 @@ fun MenuOrderingPage(navController: NavController, cartItems: MutableList<MenuIt
         }
     }
 
+    // Define the desired order of categories
+    val categoryOrder = listOf(
+        "Starters", "Mains", "Sides", "Lunch", "Desserts", "Bakery", "Drinks"
+    )
 
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
@@ -113,24 +116,58 @@ fun MenuOrderingPage(navController: NavController, cartItems: MutableList<MenuIt
         }
 
         LazyColumn {
-            filteredMenuItems.groupBy { it.category }.forEach { (category, items) ->
-            item {
-                    Text(
-                        text = category.uppercase(),
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = IrishGreen,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                }
-                items(items) { item ->
-                    MenuItemCard(
-                        item = item,
-                        cartItems = cartItems,
-                        snackbarHostState = snackbarHostState,
-                        coroutineScope = coroutineScope,
-                        navController = navController // Pass NavController here
-                    )
+            // Group the items by category and order them based on the defined category order
+            categoryOrder.forEach { category ->
+                val itemsInCategory = filteredMenuItems.filter { it.category == category }
+                if (itemsInCategory.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = category.uppercase(),
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = IrishGreen,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    }
+
+                    // If category is Drinks — split into subcategories using tags
+                    if (category == "Drinks") {
+
+                        val subcategoryGroups =
+                            itemsInCategory.groupBy { it.tags.firstOrNull() ?: "Other" }
+
+                        subcategoryGroups.forEach { (subCategory, drinks) ->
+                            item {
+                                Text(
+                                    text = subCategory.uppercase(),
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = TextGreen,
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                )
+                            }
+                            items(drinks) { item ->
+                                MenuItemCard(
+                                    item = item,
+                                    cartItems = cartItems,
+                                    snackbarHostState = snackbarHostState,
+                                    coroutineScope = coroutineScope,
+                                    navController = navController
+                                )
+                            }
+                        }
+
+                    } else {  // Default case for other categories
+                        items(itemsInCategory) { item ->
+                            MenuItemCard(
+                                item = item,
+                                cartItems = cartItems,
+                                snackbarHostState = snackbarHostState,
+                                coroutineScope = coroutineScope,
+                                navController = navController
+                            )
+                        }
+                    }
                 }
             }
         }
