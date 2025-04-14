@@ -31,6 +31,7 @@ fun ProfileScreen(navController: NavController, user: FirebaseUser?) {
     val context = LocalContext.current
     val userName = user?.displayName ?: "User"
     val userEmail = user?.email ?: ""
+    val isGuest = user?.isAnonymous == true
 
     Column(
         modifier = Modifier
@@ -90,13 +91,35 @@ fun ProfileScreen(navController: NavController, user: FirebaseUser?) {
         )
 
         // Settings Options
-        ProfileSettingItem(title = "Change Email", icon = Icons.Default.Email) {
-            // Handle Change Email
+        ProfileSettingItem(
+            title = "Change Email",
+            icon = Icons.Default.Email,
+            isEnabled = !isGuest
+        ) {
+            if (isGuest) {
+                Toast.makeText(context, "Guest accounts cannot change email.", Toast.LENGTH_SHORT).show()
+            } else {
+                // Handle Change Email
+            }
         }
-        ProfileSettingItem(title = "Change Password", icon = Icons.Default.Lock) {
-            // Handle Change Password
+
+        ProfileSettingItem(
+            title = "Change Password",
+            icon = Icons.Default.Lock,
+            isEnabled = !isGuest
+        ) {
+            if (isGuest) {
+                Toast.makeText(context, "Guest accounts cannot change password.", Toast.LENGTH_SHORT).show()
+            } else {
+                // Handle Change Password
+            }
         }
-        ProfileSettingItem(title = "Log Out", icon = Icons.AutoMirrored.Filled.ExitToApp) {
+
+        ProfileSettingItem(
+            title = "Log Out",
+            icon = Icons.AutoMirrored.Filled.ExitToApp,
+            isEnabled = true
+        ) {
             FirebaseAuth.getInstance().signOut()
             Toast.makeText(context, "Logged out successfully", Toast.LENGTH_SHORT).show()
             navController.navigate("welcome") {
@@ -108,24 +131,33 @@ fun ProfileScreen(navController: NavController, user: FirebaseUser?) {
 }
 
 @Composable
-fun ProfileSettingItem(title: String, icon: ImageVector, onClick: () -> Unit) {
+fun ProfileSettingItem(
+    title: String,
+    icon: ImageVector,
+    isEnabled: Boolean = true,
+    onClick: () -> Unit
+) {
+    val textColor = if (isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.surfaceVariant
+    val iconColor = if (isEnabled) IrishGreen else MaterialTheme.colorScheme.surfaceVariant
+
     ListItem(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable(enabled = true) { onClick() } // Allow click always to handle toast logic.
             .padding(vertical = 4.dp),
         leadingContent = {
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                tint = IrishGreen
+                tint = iconColor
             )
         },
         headlineContent = {
             Text(
                 text = title,
                 fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = textColor
             )
         }
     )

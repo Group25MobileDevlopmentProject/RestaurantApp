@@ -1,5 +1,6 @@
 package com.example.restaurantapp.ui.auth
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,6 +15,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -21,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.restaurantapp.R
 import com.example.restaurantapp.ui.theme.*
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 @Composable
 fun WelcomeScreen(
@@ -97,7 +101,28 @@ fun WelcomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 WelcomeButton(text = "Login / Sign Up", color = IrishGreen, onClick = onAuthClick)
-                WelcomeButton(text = "Enter as Guest", color = GoldenYellow, onClick = onHomeClick)
+                val context = LocalContext.current
+
+                WelcomeButton(
+                    text = "Enter as Guest",
+                    color = GoldenYellow,
+                    onClick = {
+                        val auth = Firebase.auth
+                        auth.signInAnonymously()
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    onHomeClick()  // Navigate to Home
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Failed to sign in as guest: ${task.exception?.localizedMessage}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                    }
+                )
+
             }
         }
     }
