@@ -145,6 +145,18 @@ fun MenuOrderingPage(navController: NavController, cartItems: MutableList<MenuIt
                                     color = TextGreen,
                                     modifier = Modifier.padding(vertical = 4.dp)
                                 )
+
+                                // Insert the extra description for Spirits
+                                if (subCategory.equals("Spirits", ignoreCase = true)) {
+                                    Text(
+                                        text = "Irish whiskey is a beloved and distinct whiskey category renowned for its smooth, approachable character. " +
+                                                "It's traditionally triple-distilled, often aged in various cask types, including ex-bourbon and sherry casks, " +
+                                                "resulting in a balanced and flavourful spirit. Jameson is a good place to start …",
+                                        fontSize = 14.sp,
+                                        color = Color.DarkGray,
+                                        modifier = Modifier.padding(bottom = 8.dp)
+                                    )
+                                }
                             }
                             items(drinks) { item ->
                                 MenuItemCard(
