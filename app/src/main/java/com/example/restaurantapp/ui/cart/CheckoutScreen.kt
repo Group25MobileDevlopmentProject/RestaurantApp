@@ -60,7 +60,7 @@ fun CheckoutScreen(navController: NavController, cartItems: List<MenuItem>) {
         Button(
             onClick = {
                 // Handle order placement
-                navController.navigate("order_status")
+                navController.navigate("order_confirmation")
             },
             colors = ButtonDefaults.buttonColors(containerColor = IrishGreen),
             modifier = Modifier
