@@ -15,10 +15,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.*
 import com.example.restaurantapp.ui.theme.RestaurantAppTheme
 import androidx.compose.material.icons.filled.*
+import com.example.restaurantapp.ui.admin.AdminScreen
+import com.example.restaurantapp.ui.admin.SendNotificationsScreen
 import com.example.restaurantapp.ui.auth.AuthScreen
 import com.example.restaurantapp.ui.auth.WelcomeScreen
 import com.example.restaurantapp.ui.cart.CheckoutScreen
-import com.example.restaurantapp.ui.cart.OrderStatusScreen
+import com.example.restaurantapp.ui.cart.OrderConfirmationScreen
 import com.example.restaurantapp.ui.home.EventsScreen
 import com.example.restaurantapp.ui.home.HomeScreen
 import com.example.restaurantapp.ui.model.MenuItem
@@ -62,6 +64,19 @@ fun AppContent() {
     val authState = rememberFirebaseAuthLauncher()
     val auth: FirebaseAuth = remember { Firebase.auth }
 
+    // --- Your role fetching logic ---
+    val user = auth.currentUser
+    var userRole by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(user) {
+        user?.let {
+            val db = FirebaseFirestore.getInstance()
+            val doc = db.collection("users").document(it.uid).get().await()
+            userRole = doc.getString("role")
+        }
+    }
+    // ---------------------------------
+
     RestaurantAppTheme(darkTheme = isDarkMode) {
         val navController = rememberNavController()
         val currentRoute = navController.currentBackStackEntryAsState()
@@ -70,7 +85,7 @@ fun AppContent() {
             bottomBar = {
                 val hideBottomNavRoutes = listOf("welcome", "auth")
                 if (currentRoute.value?.destination?.route !in hideBottomNavRoutes) {
-                    BottomNavBar(navController)
+                    BottomNavBar(navController, userRole)
                 }
             }
         ) { paddingValues ->
@@ -79,6 +94,7 @@ fun AppContent() {
                 startDestination = if (authState.value != null) "home" else "welcome",
                 modifier = Modifier.padding(paddingValues)
             ) {
+                // Your navigation setup as it already is
                 composable("home") { HomeScreen(navController) }
                 composable("menu") { MenuOrderingPage(navController, cartItems) }
                 composable("menu_item_info/{itemId}") { backStackEntry ->
@@ -95,38 +111,47 @@ fun AppContent() {
                             isVegetarian = doc.getBoolean("isVegetarian") == true,
                             isGlutenFree = doc.getBoolean("isGlutenFree") == true
                         )
-
                     }
 
                     menuItem?.let {
                         MenuItemInfoPage(navController, it)
                     } ?: Text("Loading...")
                 }
-
-                composable("events") {
-                    EventsScreen(navController = navController, contentPadding = paddingValues)
-                }
+                composable("events") { EventsScreen(navController = navController, contentPadding = paddingValues) }
                 composable("profile") { ProfileScreen(navController, authState.value) }
-                composable("cart") { CartPage(navController, cartItems) }
+
+                // Admin routes
+                composable("admin") { AdminScreen(navController) }
+                composable("admin_manage_menu") { AdminScreen(navController) }
+                composable("admin_manage_events") { AdminScreen(navController) }
+                composable("admin_send_notifications") { SendNotificationsScreen(navController) }
+                composable("admin_view_orders") { AdminScreen(navController) }
+
+
+                // Settings routes
                 composable("settings") { SettingsScreen(navController, isDarkMode) { isDarkMode = it } }
                 composable("language_selection") { LanguageSelectionScreen(navController) }
-                composable("welcome") { WelcomeScreen(
-                    onAuthClick = { navController.navigate("auth") },
-                    onHomeClick = { navController.navigate("home") }
-                ) }
+
+                // Authentication routes
+                composable("welcome") {
+                    WelcomeScreen(
+                        onAuthClick = { navController.navigate("auth") },
+                        onHomeClick = { navController.navigate("home") }
+                    )
+                }
                 composable("auth") { AuthScreen(navController) }
-                composable("checkout") { CheckoutScreen(
-                    navController,
-                    cartItems
-                ) }
-                composable("order_status") { OrderStatusScreen(navController) }
+
+                // Cart routes
+                composable("checkout") { CheckoutScreen(navController, cartItems) }
+                composable("order_confirmation") { OrderConfirmationScreen(navController) }
+                composable("cart") { CartPage(navController, cartItems) }
             }
         }
     }
 }
 
 @Composable
-fun BottomNavBar(navController: NavController) {
+fun BottomNavBar(navController: NavController, userRole: String?) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -197,5 +222,19 @@ fun BottomNavBar(navController: NavController) {
                 }
             }
         )
+
+        if (userRole == "admin") {
+            NavigationBarItem(
+                icon = { Icon(Icons.Filled.AdminPanelSettings, contentDescription = "Admin") },
+                label = { Text("Admin") },
+                selected = currentRoute == "admin",
+                onClick = {
+                    navController.navigate("admin") {
+                        popUpTo(navController.graph.startDestinationId)
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
     }
 }
