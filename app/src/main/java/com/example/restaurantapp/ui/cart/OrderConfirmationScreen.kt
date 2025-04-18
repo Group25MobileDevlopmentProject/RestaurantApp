@@ -15,7 +15,7 @@ import com.example.restaurantapp.R
 import com.example.restaurantapp.ui.theme.IrishGreen
 
 @Composable
-fun OrderStatusScreen(navController: NavController) {
+fun OrderConfirmationScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
