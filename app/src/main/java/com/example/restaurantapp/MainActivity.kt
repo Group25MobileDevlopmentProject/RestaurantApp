@@ -15,8 +15,13 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.*
 import com.example.restaurantapp.ui.theme.RestaurantAppTheme
 import androidx.compose.material.icons.filled.*
+import com.example.restaurantapp.ui.admin.AddMenuItemScreen
 import com.example.restaurantapp.ui.admin.AdminScreen
+import com.example.restaurantapp.ui.admin.EditMenuItemScreen
+import com.example.restaurantapp.ui.admin.ManageEventsScreen
+import com.example.restaurantapp.ui.admin.ManageMenuItemsScreen
 import com.example.restaurantapp.ui.admin.SendNotificationsScreen
+import com.example.restaurantapp.ui.admin.ViewOrders
 import com.example.restaurantapp.ui.auth.AuthScreen
 import com.example.restaurantapp.ui.auth.WelcomeScreen
 import com.example.restaurantapp.ui.cart.CheckoutScreen
@@ -122,11 +127,15 @@ fun AppContent() {
 
                 // Admin routes
                 composable("admin") { AdminScreen(navController) }
-                composable("admin_manage_menu") { AdminScreen(navController) }
-                composable("admin_manage_events") { AdminScreen(navController) }
+                composable("admin_manage_menu") { ManageMenuItemsScreen(navController) }
+                composable("admin_add_menu_item") { AddMenuItemScreen(navController) }
+                composable("admin_edit_menu_item/{itemId}") { backStackEntry ->
+                    val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
+                    EditMenuItemScreen(navController, itemId)
+                }
+                composable("admin_manage_events") { ManageEventsScreen(navController) }
                 composable("admin_send_notifications") { SendNotificationsScreen(navController) }
-                composable("admin_view_orders") { AdminScreen(navController) }
-
+                composable("admin_view_orders") { ViewOrders(navController) }
 
                 // Settings routes
                 composable("settings") { SettingsScreen(navController, isDarkMode) { isDarkMode = it } }
