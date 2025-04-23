@@ -52,9 +52,11 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core)
-    implementation (libs.androidx.material.icons.extended)
-    implementation (libs.androidx.activity.compose)
-    implementation (libs.androidx.ui.tooling)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.work.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -65,18 +67,12 @@ dependencies {
 
     // Import the Firebase BoM
     implementation(platform(libs.firebase.bom))
-
-
-    // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation(libs.firebase.analytics)
-    implementation (libs.firebase.firestore.ktx)
+    implementation(libs.firebase.firestore.ktx)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.ui.auth)
 
     implementation(libs.coil.compose)
 
-
-    // Add the dependencies for any other desired Firebase products
-    // https://firebase.google.com/docs/android/setup#available-libraries
 }
