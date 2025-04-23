@@ -13,52 +13,89 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.restaurantapp.util.PreferencesManager
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LanguageSelectionScreen(navController: NavController) {
-    // Available languages
-    val languages = listOf("English", "Finnish", "Spanish", "French")
+fun LanguageSelectionScreen(
+    navController: NavController,
+    preferencesManager: PreferencesManager,
+    snackbarHostState: SnackbarHostState
+) {
+    val languageMap = mapOf(
+        "en" to "English",
+        "fi" to "Finnish",
+        "es" to "Spanish",
+        "fr" to "French"
+    )
+    val languages = languageMap.values.toList()
 
-    // State to keep track of the selected language
-    var selectedLanguage by remember { mutableStateOf(languages[0]) }
+    val currentLanguageCode by preferencesManager.languageFlow.collectAsState(initial = "en")
+    val currentLanguage = languageMap[currentLanguageCode] ?: "English"
 
-    // Language selection layout
-    Column(modifier = Modifier.padding(16.dp)) {
-        // TopAppBar with Back Button
-        TopAppBar(
-            title = { Text("Select Language") },
-            navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                }
-            }
-        )
+    var selectedLanguage by remember { mutableStateOf(currentLanguage) }
 
-        // Display language options
-        languages.forEach { language ->
-            LanguageOption(
-                language = language,
-                isSelected = selectedLanguage == language,
-                onClick = {
-                    selectedLanguage = language
+    LaunchedEffect(currentLanguage) {
+        selectedLanguage = currentLanguage
+    }
+
+    val coroutineScope = rememberCoroutineScope()
+
+    Scaffold { paddingValues ->
+
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .padding(paddingValues)
+        ) {
+
+            TopAppBar(
+                title = { Text("Select Language") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
                 }
             )
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            languages.forEach { language ->
+                LanguageOption(
+                    language = language,
+                    isSelected = selectedLanguage == language,
+                    onClick = { selectedLanguage = language }
+                )
+            }
 
-        // Save Button (optional)
-        Button(
-            onClick = { /* Handle language change saving logic */ },
-            modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.medium
-        ) {
-            Text("Save Language", color = Color.White)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    coroutineScope.launch {
+                        val selectedCode = languageMap.entries
+                            .firstOrNull { it.value == selectedLanguage }
+                            ?.key ?: "en"
+
+                        preferencesManager.setLanguage(selectedCode)
+
+                        // Navigate back first
+                        navController.popBackStack()
+
+                        // Then show Snackbar (hosted at app level, so still visible)
+                        snackbarHostState.showSnackbar(
+                            message = "$selectedLanguage saved!",
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text("Save Language", color = Color.White)
+            }
         }
     }
 }
-
 
 @Composable
 fun LanguageOption(
