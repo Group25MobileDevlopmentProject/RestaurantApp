@@ -15,14 +15,17 @@ import com.example.restaurantapp.ui.model.MenuItem
 import com.example.restaurantapp.ui.theme.IrishGreen
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
-import com.example.restaurantapp.ui.admin.components.EmptyStateScreen
+import com.example.restaurantapp.ui.components.EmptyStateScreen
 
 @Composable
 fun ManageMenuItemsScreen(navController: NavController) {
     val db = FirebaseFirestore.getInstance()
     var menuItems by remember { mutableStateOf<List<MenuItem>>(emptyList()) }
 
-    // Fetch menu items
+    val categoryOrder = listOf(
+        "Starters", "Mains", "Sides", "Lunch", "Desserts", "Bakery", "Drinks"
+    )
+
     LaunchedEffect(Unit) {
         val snapshot = db.collection("menuItems").get().await()
         menuItems = snapshot.documents.mapNotNull { doc ->
@@ -35,7 +38,6 @@ fun ManageMenuItemsScreen(navController: NavController) {
             .fillMaxSize()
             .padding(horizontal = 16.dp)
     ) {
-        // Header matching Settings style
         Text(
             text = "Manage Menu Items",
             fontSize = 24.sp,
@@ -44,9 +46,8 @@ fun ManageMenuItemsScreen(navController: NavController) {
             modifier = Modifier.padding(vertical = 12.dp)
         )
 
-        // Add New Item Button
         Button(
-            onClick = { navController.navigate("add_menu_item") },
+            onClick = { navController.navigate("admin_add_menu_item") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
@@ -57,61 +58,102 @@ fun ManageMenuItemsScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // List of Menu Items
         if (menuItems.isEmpty()) {
             EmptyStateScreen(
                 message = "No menu items available.",
                 actionLabel = "Add Menu Item"
             ) {
-                navController.navigate("add_menu_item")
+                navController.navigate("admin_add_menu_item")
             }
         } else {
             LazyColumn {
-                items(menuItems) { item ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        elevation = CardDefaults.cardElevation(4.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(text = item.name, style = MaterialTheme.typography.titleMedium)
-                                Text(
-                                    text = "€${item.price}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
+                categoryOrder.forEach { category ->
+                    val itemsInCategory = menuItems.filter { it.category == category }
+                    if (itemsInCategory.isNotEmpty()) {
+                        item {
+                            Text(
+                                text = category.uppercase(),
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = IrishGreen,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                        }
 
-                            // Edit button
-                            Button(
-                                onClick = {
-                                    navController.navigate("edit_menu_item/${item.id}")
+                        if (category == "Drinks") {
+                            val subcategoryGroups = itemsInCategory.groupBy { it.tags.firstOrNull() ?: "Other" }
+
+                            subcategoryGroups.forEach { (subCategory, drinks) ->
+                                item {
+                                    Text(
+                                        text = subCategory.uppercase(),
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.padding(vertical = 4.dp)
+                                    )
                                 }
-                            ) {
-                                Text("Edit")
+
+                                items(drinks) { item ->
+                                    AdminMenuItemCard(item, navController, db) {
+                                        menuItems = menuItems.filter { it.id != item.id }
+                                    }
+                                }
                             }
-
-                            Spacer(modifier = Modifier.width(8.dp))
-
-                            // Delete button
-                            Button(
-                                onClick = {
-                                    db.collection("menuItems").document(item.id).delete()
+                        } else {
+                            items(itemsInCategory) { item ->
+                                AdminMenuItemCard(item, navController, db) {
                                     menuItems = menuItems.filter { it.id != item.id }
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                            ) {
-                                Text("Delete")
+                                }
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AdminMenuItemCard(
+    item: MenuItem,
+    navController: NavController,
+    db: FirebaseFirestore,
+    onDelete: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = item.name, style = MaterialTheme.typography.titleMedium)
+                Text(text = "€${item.price}", style = MaterialTheme.typography.bodyMedium)
+            }
+
+            Button(
+                onClick = { navController.navigate("admin_edit_menu_item/${item.id}") }
+            ) {
+                Text("Edit")
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Button(
+                onClick = {
+                    db.collection("menuItems").document(item.id).delete()
+                    onDelete()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text("Delete")
             }
         }
     }

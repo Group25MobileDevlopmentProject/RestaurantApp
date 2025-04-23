@@ -1,4 +1,4 @@
-package com.example.restaurantapp.ui.admin.components
+package com.example.restaurantapp.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
