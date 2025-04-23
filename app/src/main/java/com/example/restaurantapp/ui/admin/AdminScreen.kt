@@ -39,12 +39,12 @@ fun AdminScreen(navController: NavController) {
         AdminOption(title = "Manage Events") {
             navController.navigate("admin_manage_events")
         }
-        AdminOption(title = "Send Notifications") {
-            navController.navigate("admin_send_notifications")
-        }
-        AdminOption(title = "View Orders") {
-            navController.navigate("admin_view_orders")
-        }
+//        AdminOption(title = "Send Notifications") {
+//            navController.navigate("admin_send_notifications")
+//        }
+//        AdminOption(title = "View Orders") {
+//            navController.navigate("admin_view_orders")
+//        }
         AdminOption(title = "Settings") {
             navController.navigate("settings")
         }
