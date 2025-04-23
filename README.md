@@ -1,33 +1,65 @@
-# 🍽️ The Grand Spot Restaurant App
+# 🍽️ The Grand Spot – Restaurant App
 
-A modern mobile restaurant app with real-time menu management using Firebase Firestore. This project enables restaurant staff to **Create, Read, Update, and Delete (CRUD)** menu items through an admin panel, with changes immediately reflected in the customer-facing app.
-
----
-
-## 🚀 Features
-
-- **📋 Create** – Add new menu items with name, description, category, price, dietary info, and image
-- **🔍 Read** – Fetch and display all menu items, categorized and filterable
-- **✏️ Update** – Modify item details in real-time
-- **🗑️ Delete** – Remove items no longer offered
+A modern restaurant/pub app built with Jetpack Compose and Firebase, featuring real-time table ordering, admin-powered menu management, and a recipe marketplace.
 
 ---
 
-## 🔧 Setup & Configuration
+## 📱 Features
 
-### 1. Firebase Setup
-- Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
-- Register your Android app with your package name (e.g., `com.example.restaurantapp`)
-- Download `google-services.json` and place it in your `app/` directory
+### 🧾 Customer Interface
+- Browse and filter a dynamic menu
+- Real-time order placement from the table
+- View upcoming events and RSVP
+- Purchase chef-created recipes (coming soon)
 
-### 2. Dependencies
+### 🔐 Admin Panel
+- 🔄 **Firebase CRUD** for managing menu items in real-time
+- Add, edit, and remove items instantly without redeploying the app
+- Clean and organized UI with categories, tags, and dietary filters
 
-#### Project-level `build.gradle`
+---
+
+## 🔧 Tech Stack
+
+- **Kotlin + Jetpack Compose** – Modern Android UI toolkit
+- **Firebase Firestore** – Real-time database for menu & events
+- **Firebase Auth** – Secure login for admins
+- **Material3 Design** – Sleek and consistent UI/UX
+- **Coil** – Image loading from URLs
+- **GitHub Projects** – Agile Kanban boards & team planning
+
+---
+
+## 🚀 Advanced Feature: Firebase CRUD – Menu Management
+
+This feature allows real-time creation, retrieval, update, and deletion of menu items via an admin interface. All changes reflect immediately on the customer-facing interface.
+
+### ✨ Key Functionalities
+
+| Action   | Description |
+|----------|-------------|
+| **Create** | Add menu items with name, description, price, tags, and dietary info |
+| **Read**   | Fetch and display all menu items with filters |
+| **Update** | Modify item details live |
+| **Delete** | Remove items from the menu instantly |
+
+---
+
+## ⚙️ Setup Guide
+
+### 1. Firebase Configuration
+- Go to [Firebase Console](https://console.firebase.google.com)
+- Create a new project and add your Android app
+- Download `google-services.json` and place it in `/app/`
+
+### 2. Add Dependencies
+
+**Project-level `build.gradle`:**
 ```kotlin
 id("com.google.gms.google-services") version "4.4.2" apply false
 ```
 
-#### App-level `build.gradle`
+**App-level `build.gradle`:**
 ```kotlin
 plugins {
     id("com.google.gms.google-services")
