@@ -3,9 +3,14 @@ package com.example.restaurantapp
 import CartPage
 import MenuItemInfoPage
 import MenuOrderingPage
+import android.content.pm.PackageManager
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
@@ -15,8 +20,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.*
 import com.example.restaurantapp.ui.theme.RestaurantAppTheme
 import androidx.compose.material.icons.filled.*
-import com.example.restaurantapp.ui.admin.AddMenuItemScreen
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import com.example.restaurantapp.ui.admin.AddEventsScreen
 import com.example.restaurantapp.ui.admin.AdminScreen
+import com.example.restaurantapp.ui.admin.AddMenuItemScreen
+import com.example.restaurantapp.ui.admin.EditEventsScreen
 import com.example.restaurantapp.ui.admin.EditMenuItemScreen
 import com.example.restaurantapp.ui.admin.ManageEventsScreen
 import com.example.restaurantapp.ui.admin.ManageMenuItemsScreen
@@ -32,6 +41,8 @@ import com.example.restaurantapp.ui.model.MenuItem
 import com.example.restaurantapp.ui.settings.LanguageSelectionScreen
 import com.example.restaurantapp.ui.settings.ProfileScreen
 import com.example.restaurantapp.ui.settings.SettingsScreen
+import com.example.restaurantapp.util.NotificationHelper
+import com.example.restaurantapp.util.PreferencesManager
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -40,9 +51,36 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 class MainActivity : ComponentActivity() {
+
+    private val notificationPermissionRequest =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                // Permission granted, proceed with creating the notification channel
+                NotificationHelper.createNotificationChannel(this)
+            } else {
+                // Handle the case when permission is denied
+                // You can show a message or take appropriate action
+            }
+        }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.Theme_RestaurantApp)
+
+        // Check for notification permission
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            // Permission granted, create notification channel
+            NotificationHelper.createNotificationChannel(this)
+        } else {
+            // Request permission
+            notificationPermissionRequest.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
         setContent { AppContent() }
     }
 }
@@ -64,12 +102,16 @@ fun rememberFirebaseAuthLauncher(): State<FirebaseUser?> {
 
 @Composable
 fun AppContent() {
-    var isDarkMode by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val preferencesManager = remember { PreferencesManager(context) }
+    val darkModeFlow = preferencesManager.isDarkModeFlow
+    val isDarkMode by darkModeFlow.collectAsState(initial = false)
+
     val cartItems = remember { mutableStateListOf<MenuItem>() }
+    val snackbarHostState = remember { SnackbarHostState() }
     val authState = rememberFirebaseAuthLauncher()
     val auth: FirebaseAuth = remember { Firebase.auth }
 
-    // --- Your role fetching logic ---
     val user = auth.currentUser
     var userRole by remember { mutableStateOf<String?>(null) }
 
@@ -80,13 +122,13 @@ fun AppContent() {
             userRole = doc.getString("role")
         }
     }
-    // ---------------------------------
 
     RestaurantAppTheme(darkTheme = isDarkMode) {
         val navController = rememberNavController()
         val currentRoute = navController.currentBackStackEntryAsState()
 
         Scaffold(
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
             bottomBar = {
                 val hideBottomNavRoutes = listOf("welcome", "auth")
                 if (currentRoute.value?.destination?.route !in hideBottomNavRoutes) {
@@ -105,24 +147,35 @@ fun AppContent() {
                 composable("menu_item_info/{itemId}") { backStackEntry ->
                     val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
                     val db = FirebaseFirestore.getInstance()
+                    val coroutineScope = rememberCoroutineScope()
 
                     var menuItem by remember { mutableStateOf<MenuItem?>(null) }
 
                     LaunchedEffect(itemId) {
-                        val doc = db.collection("menuItems").document(itemId).get().await()
-                        menuItem = doc.toObject(MenuItem::class.java)?.copy(
-                            id = doc.id,
-                            isVegan = doc.getBoolean("isVegan") == true,
-                            isVegetarian = doc.getBoolean("isVegetarian") == true,
-                            isGlutenFree = doc.getBoolean("isGlutenFree") == true
-                        )
+                        try {
+                            val doc = db.collection("menuItems").document(itemId).get().await()
+                            menuItem = doc.toObject(MenuItem::class.java)?.copy(
+                                id = doc.id,
+                                isVegan = doc.getBoolean("isVegan") == true,
+                                isVegetarian = doc.getBoolean("isVegetarian") == true,
+                                isGlutenFree = doc.getBoolean("isGlutenFree") == true
+                            )
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
 
                     menuItem?.let {
-                        MenuItemInfoPage(navController, it)
+                        MenuItemInfoPage(
+                            navController = navController,
+                            menuItem = it,
+                            cartItems = cartItems,
+                            snackbarHostState = snackbarHostState,
+                            coroutineScope = coroutineScope
+                        )
                     } ?: Text("Loading...")
                 }
-                composable("events") { EventsScreen(navController = navController, contentPadding = paddingValues) }
+                composable("events") { EventsScreen(contentPadding = paddingValues) }
                 composable("profile") { ProfileScreen(navController, authState.value) }
 
                 // Admin routes
@@ -134,12 +187,25 @@ fun AppContent() {
                     EditMenuItemScreen(navController, itemId)
                 }
                 composable("admin_manage_events") { ManageEventsScreen(navController) }
+                composable("admin_add_event") { AddEventsScreen(navController) }
+                composable("admin_edit_events/{eventId}") { backStackEntry ->
+                    val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
+                    EditEventsScreen(navController, eventId)
+                }
                 composable("admin_send_notifications") { SendNotificationsScreen(navController) }
                 composable("admin_view_orders") { ViewOrders(navController) }
 
                 // Settings routes
-                composable("settings") { SettingsScreen(navController, isDarkMode) { isDarkMode = it } }
-                composable("language_selection") { LanguageSelectionScreen(navController) }
+                composable("settings") {
+                    SettingsScreen(navController, preferencesManager)
+                }
+                composable("language_selection") {
+                    LanguageSelectionScreen(
+                        navController = navController,
+                        preferencesManager = preferencesManager,
+                        snackbarHostState = snackbarHostState
+                    )
+                }
 
                 // Authentication routes
                 composable("welcome") {
