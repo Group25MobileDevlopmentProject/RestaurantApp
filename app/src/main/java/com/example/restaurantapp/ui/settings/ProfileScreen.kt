@@ -25,13 +25,30 @@ import com.example.restaurantapp.R
 import com.example.restaurantapp.ui.theme.IrishGreen
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun ProfileScreen(navController: NavController, user: FirebaseUser?) {
     val context = LocalContext.current
-    val userName = user?.displayName ?: "User"
+    val db = FirebaseFirestore.getInstance()
+
+    var userName by remember { mutableStateOf("User") }
     val userEmail = user?.email ?: ""
     val isGuest = user?.isAnonymous == true
+
+    // Fetch user name from Firestore
+    LaunchedEffect(user?.uid) {
+        if (user != null) {
+            val docRef = db.collection("users").document(user.uid)
+            docRef.get().addOnSuccessListener { document ->
+                userName = if (document != null && document.exists()) {
+                    document.getString("name") ?: "User"
+                } else {
+                    "User"
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -161,5 +178,5 @@ fun ProfileSettingItem(
             )
         }
     )
-    Divider(thickness = 1.dp, color = MaterialTheme.colorScheme.surfaceVariant)
+    HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.surfaceVariant)
 }
