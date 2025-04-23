@@ -15,13 +15,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.restaurantapp.ui.theme.IrishGreen
+import com.example.restaurantapp.util.PreferencesManager
+import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsScreen(
     navController: NavController,
-    isDarkMode: Boolean,
-    onDarkModeChanged: (Boolean) -> Unit
+    preferencesManager: PreferencesManager
 ) {
+    val isDarkMode by preferencesManager.isDarkModeFlow.collectAsState(initial = false)
+    val selectedLanguage by preferencesManager.languageFlow.collectAsState(initial = "en")
+    val coroutineScope = rememberCoroutineScope()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -37,19 +42,21 @@ fun SettingsScreen(
         )
 
         // Appearance
-        SettingsSection(title = "Appearance") {
-            SettingsSwitchOption(
-                title = "Dark Mode",
-                isChecked = isDarkMode,
-                onToggle = onDarkModeChanged
-            )
-        }
+        SettingsSwitchOption(
+            title = "Dark Mode",
+            isChecked = isDarkMode,
+            onToggle = {
+                coroutineScope.launch {
+                    preferencesManager.setDarkMode(it) // save new state
+                }
+            }
+        )
 
         // Notifications
         SettingsSection(title = "Notifications") {
             SettingsSwitchOption(
                 title = "Enable Notifications",
-                isChecked = true,
+                isChecked = true, // You can make this dynamic later
                 onToggle = { /* TODO */ }
             )
         }
@@ -69,18 +76,6 @@ fun SettingsScreen(
         }
 
         Spacer(modifier = Modifier.height(24.dp))
-
-        // Save button (optional)
-        Button(
-            onClick = { /* TODO */ },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            shape = MaterialTheme.shapes.medium,
-            colors = ButtonDefaults.buttonColors(containerColor = IrishGreen)
-        ) {
-            Text("Save Settings", fontSize = 16.sp, color = MaterialTheme.colorScheme.onPrimary)
-        }
     }
 }
 
